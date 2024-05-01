@@ -5,30 +5,25 @@ import time
 import pyttsx3
 import mediapipe as mp
 
-# Initialize the camera
 cap = cv2.VideoCapture(0)
-
-# Initialize the face mesh module
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh_module = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1, min_detection_confidence=0.5)
 
 # Initialize servos
 servo_pin_horizontal = 32  # GPIO pin for horizontal servo
-servo_pin_vertical = 33    # GPIO pin for vertical servo
-GPIO.setmode(GPIO.BOARD)   # Set GPIO numbering mode
-GPIO.setup(servo_pin_horizontal, GPIO.OUT)  # Set horizontal servo pin as an output
-GPIO.setup(servo_pin_vertical, GPIO.OUT)    # Set vertical servo pin as an output
-servo_horizontal = GPIO.PWM(servo_pin_horizontal, 50)  # Create PWM instance for horizontal servo with frequency 50 Hz
-servo_vertical = GPIO.PWM(servo_pin_vertical, 50)      # Create PWM instance for vertical servo with frequency 50 Hz
-servo_horizontal.start(0)  # Start PWM for horizontal servo with 0 duty cycle (neutral position)
-servo_vertical.start(0)    # Start PWM for vertical servo with 0 duty cycle (neutral position)
+servo_pin_vertical = 33    # GPIO pin for vertical serv
+GPIO.setmode(GPIO.BOARD)   
+GPIO.setup(servo_pin_horizontal, GPIO.OUT)  
+GPIO.setup(servo_pin_vertical, GPIO.OUT)   
+servo_horizontal = GPIO.PWM(servo_pin_horizontal, 50)  
+servo_vertical = GPIO.PWM(servo_pin_vertical, 50)     
+servo_horizontal.start(0) 
+servo_vertical.start(0) 
 
-# Initialize variables for smoothing servo movement
 prev_servo_angle_horizontal = 90
 prev_servo_angle_vertical = 90
-smooth_factor = 0.8  # Adjust this factor for smoothing servo movement
+smooth_factor = 0.8 
 
-# Initialize the text-to-speech engine
 engine = pyttsx3.init()
 
 def draw_face_mesh(frame, face_landmarks):
@@ -44,15 +39,15 @@ def draw_face_mesh(frame, face_landmarks):
 def move_servos_to_center(x_center, y_center, smooth_factor=0.8):
     global prev_servo_angle_horizontal, prev_servo_angle_vertical
     
-    # Calculate servo angles based on the center coordinates
+
     angle_horizontal = 90 + int((x_center - 0.5) * 180)
     angle_vertical = 90 + int((y_center - 0.5) * 180)
     
-    # Smooth servo movements
+    
     servo_angle_horizontal = smooth_factor * prev_servo_angle_horizontal + (1 - smooth_factor) * angle_horizontal
     servo_angle_vertical = smooth_factor * prev_servo_angle_vertical + (1 - smooth_factor) * angle_vertical
     
-    # Limit servo angles within a safe range
+    # Limit servo angles within a safe rang
     servo_angle_horizontal = max(0, min(servo_angle_horizontal, 180))
     servo_angle_vertical = max(0, min(servo_angle_vertical, 180))
     
